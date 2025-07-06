@@ -20,6 +20,7 @@ jobs:
         with:
           repository: rust-lang/rust
           ref: 5e17a2a91dd7dbefd8b4a1087c2e42257457deeb
+          submodules: true
       - name: Install Build Dependencies
         run: |
           apt-get update
