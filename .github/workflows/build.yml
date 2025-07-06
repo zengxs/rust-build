@@ -15,12 +15,6 @@ jobs:
           - arch: aarch64
             os: ubuntu-24.04-arm
     steps:
-      - name: Checkout Rust Repository
-        uses: actions/checkout@v4
-        with:
-          repository: rust-lang/rust
-          ref: 5e17a2a91dd7dbefd8b4a1087c2e42257457deeb
-          submodules: true
       - name: Install Build Dependencies
         run: |
           apt-get update
@@ -41,6 +35,13 @@ jobs:
             wget \
             curl \
             git
+
+      - name: Checkout Rust Repository
+        uses: actions/checkout@v4
+        with:
+          repository: rust-lang/rust
+          ref: 5e17a2a91dd7dbefd8b4a1087c2e42257457deeb
+          submodules: true
 
       - name: Build Rust
         run: |
