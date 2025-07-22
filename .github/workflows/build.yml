@@ -54,12 +54,9 @@ jobs:
             --prefix=/opt/rust-nightly-${{ env.NIGHTLY_VERSION }} \
             --sysconfdir=/opt/rust-nightly-${{ env.NIGHTLY_VERSION }}/etc \
             --disable-docs \
-            --disable-lld \
             --enable-full-tools \
-            --enable-llvm-link-shared \
             --enable-cargo-native-static \
-            --llvm-root=/usr/lib/llvm-${{ env.LLVM_MAJOR }} \
-            --set=rust.jemalloc
+            --llvm-root=/usr/lib/llvm-${{ env.LLVM_MAJOR }}
           make -j$(nproc)
           make install
 
