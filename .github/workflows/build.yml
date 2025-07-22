@@ -2,6 +2,11 @@ name: build
 
 on: push
 
+env:
+  NIGHTLY_COMMIT: 97da04c9222b1b1b362309555c5825793c3f7f03
+  NIGHTLY_VERSION: 20250722
+  LLVM_MAJOR: 19
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -20,13 +25,13 @@ jobs:
           apt-get update
           apt-get install -y \
             build-essential \
-            llvm-18 \
-            clang-18 \
-            lld-18 \
+            llvm-${{ env.LLVM_MAJOR }} \
+            clang-${{ env.LLVM_MAJOR }} \
+            lld-${{ env.LLVM_MAJOR }} \
             cmake \
             ninja-build \
             pkg-config \
-            libpolly-18-dev \
+            libpolly-${{ env.LLVM_MAJOR }}-dev \
             libssl-dev \
             zlib1g-dev \
             libzstd-dev \
@@ -40,38 +45,38 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: rust-lang/rust
-          ref: 5e17a2a91dd7dbefd8b4a1087c2e42257457deeb
+          ref: ${{ env.NIGHTLY_COMMIT }}
           submodules: true
 
       - name: Build Rust
         run: |
           ./configure \
-            --prefix=/opt/rust-nightly-20250405 \
-            --sysconfdir=/opt/rust-nightly-20250405/etc \
+            --prefix=/opt/rust-nightly-${{ env.NIGHTLY_VERSION }} \
+            --sysconfdir=/opt/rust-nightly-${{ env.NIGHTLY_VERSION }}/etc \
             --disable-docs \
             --disable-lld \
             --enable-full-tools \
             --enable-llvm-link-shared \
             --enable-cargo-native-static \
-            --llvm-root=/usr/lib/llvm-18 \
+            --llvm-root=/usr/lib/llvm-${{ env.LLVM_MAJOR }} \
             --set=rust.jemalloc
           make -j$(nproc)
           make install
 
       - name: Verify Installation
         run: |
-          /opt/rust-nightly-20250405/bin/rustc --version
-          /opt/rust-nightly-20250405/bin/cargo --version
+          /opt/rust-nightly-${{ env.NIGHTLY_VERSION }}/bin/rustc --version
+          /opt/rust-nightly-${{ env.NIGHTLY_VERSION }}/bin/cargo --version
 
       - name: Make Archive
         run: |
-          tar -cf rust-nightly-20250405-${{ matrix.arch }}.tar /opt/rust-nightly-20250405
-          pzstd --ultra -22 -o rust-nightly-20250405-${{ matrix.arch }}.tar.zst rust-nightly-20250405-${{ matrix.arch }}.tar
-          rm rust-nightly-20250405-${{ matrix.arch }}.tar
+          tar -cf rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar /opt/rust-nightly-${{ env.NIGHTLY_VERSION }}
+          xz -9e -T0 -o rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar.xz rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar
+          rm rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rust-nightly-20250405-${{ matrix.arch }}.tar.zst
-          path: rust-nightly-20250405-${{ matrix.arch }}.tar.zst
+          name: rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar.xz
+          path: rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar.xz
           compression-level: "0"
