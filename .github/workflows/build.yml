@@ -3,8 +3,8 @@ name: build
 on: push
 
 env:
-  NIGHTLY_COMMIT: 97da04c9222b1b1b362309555c5825793c3f7f03
-  NIGHTLY_VERSION: 20250722
+  NIGHTLY_COMMIT: a7a1618e6c835f1f00940ad72203d05808209a0d
+  NIGHTLY_VERSION: '2025-07-22'
   LLVM_MAJOR: 19
 
 jobs:
@@ -56,7 +56,10 @@ jobs:
             --disable-docs \
             --enable-full-tools \
             --enable-cargo-native-static \
-            --llvm-root=/usr/lib/llvm-${{ env.LLVM_MAJOR }}
+            --enable-llvm-link-shared \
+            --llvm-root=/usr/lib/llvm-${{ env.LLVM_MAJOR }} \
+            --set=rust.jemalloc \
+            --disable-lld
           make -j$(nproc)
           make install
 
