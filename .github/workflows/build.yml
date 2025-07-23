@@ -71,8 +71,7 @@ jobs:
       - name: Make Archive
         run: |
           tar -cf rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar /opt/rust-nightly-${{ env.NIGHTLY_VERSION }}
-          xz -9e -T0 -o rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar.xz rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar
-          rm rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar
+          xz -9e -T0 rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
