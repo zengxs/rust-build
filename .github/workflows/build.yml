@@ -22,8 +22,8 @@ jobs:
     steps:
       - name: Install Build Dependencies
         run: |
+          dnf install -yq epel-release 'dnf-command(config-manager)'
           dnf config-manager --enable crb
-          dnf install -yq epel-release
           dnf groupinstall -yq "Development Tools"
           dnf install -yq \
             git \
