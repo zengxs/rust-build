@@ -52,13 +52,12 @@ jobs:
           mkdir llvm-build
           cd llvm-build
           cmake -G Ninja ../llvm-project/llvm \
-            -DCMAKE_INSTALL_PREFIX=/opt/llvm-${{ env.LLVM_VERSION }} \
+            -DCMAKE_INSTALL_PREFIX=/opt/llvm-18 \
             -DCMAKE_BUILD_TYPE=MinSizeRel \
             -DLLVM_VERSION_SUFFIX=-rust-nightly-${{ env.NIGHTLY_VERSION }} \
-            -DLLVM_ENABLE_LTO=Thin \
             -DLLVM_ENABLE_LLD=ON \
             -DLLVM_ENABLE_ASSERTIONS=ON \
-            -DLLVM_ABI_BREAKING_CHECKS=ON \
+            -DLLVM_ABI_BREAKING_CHECKS=FORCE_ON \
             -DLLVM_UNREACHABLE_OPTIMIZE=OFF \
             -DLLVM_ENABLE_PLUGINS=ON \
             -DLLVM_TARGETS_TO_BUILD="AArch64;AMDGPU;ARM;BPF;Hexagon;LoongArch;MSP430;Mips;NVPTX;PowerPC;RISCV;Sparc;SystemZ;WebAssembly;X86" \
@@ -80,7 +79,7 @@ jobs:
             -DLLVM_ENABLE_ZSTD:BOOL=FORCE_ON
           ninja -j$(nproc)
           ninja install
-          /opt/llvm-${{ env.LLVM_VERSION }}/bin/llvm-config --version
+          /opt/llvm-18/bin/llvm-config --version
           cd ..
 
       - name: Checkout Rust Repository
@@ -94,8 +93,8 @@ jobs:
       - name: Build Rust
         run: |
           cd rust
-          export PATH=/opt/llvm-${{ env.LLVM_VERSION }}/bin:$PATH
-          export LD_LIBRARY_PATH=/opt/llvm-${{ env.LLVM_VERSION }}/lib:$LD_LIBRARY_PATH
+          export PATH=/opt/llvm-18/bin:$PATH
+          export LD_LIBRARY_PATH=/opt/llvm-18/lib:$LD_LIBRARY_PATH
           export CXX=clang++
           export CC=clang
           ./configure \
@@ -105,7 +104,7 @@ jobs:
             --enable-full-tools \
             --enable-cargo-native-static \
             --enable-llvm-link-shared \
-            --llvm-root=/opt/llvm-${{ env.LLVM_VERSION }} \
+            --llvm-root=/opt/llvm-18 \
             --set=rust.jemalloc \
             --disable-lld
           make -j$(nproc)
@@ -120,7 +119,7 @@ jobs:
         run: |
           mkdir artifacts
           cd artifacts
-          tar -cf llvm-${{ env.LLVM_VERSION }}-${{ matrix.arch }}.tar /opt/llvm-${{ env.LLVM_VERSION }}
+          tar -cf llvm-${{ env.LLVM_VERSION }}-${{ matrix.arch }}.tar /opt/llvm-18
           xz -9e -T0 llvm-${{ env.LLVM_VERSION }}-${{ matrix.arch }}.tar
           tar -cf rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar /opt/rust-nightly-${{ env.NIGHTLY_VERSION }}
           xz -9e -T0 rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar
