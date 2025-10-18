@@ -127,16 +127,12 @@ jobs:
 
       - name: Make Archive
         run: |
-          mkdir artifacts
-          cd artifacts
-          tar -cf llvm-${{ env.LLVM_VERSION }}-${{ matrix.arch }}.tar /opt/llvm-18
-          xz -9e -T0 llvm-${{ env.LLVM_VERSION }}-${{ matrix.arch }}.tar
-          tar -cf rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar /opt/rust-nightly-${{ env.NIGHTLY_VERSION }}
-          xz -9e -T0 rust-nightly-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar
+          tar -Pcvf rust-nightly+llvm-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar /opt/rust-nightly-${{ env.NIGHTLY_VERSION }} /opt/llvm-18
+          xz --verbose -9e -T0 rust-nightly+llvm-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rust+llvm-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}
-          path: artifacts/
+          name: rust-nightly+llvm-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}
+          path: rust-nightly+llvm-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar.xz
           compression-level: "0"
