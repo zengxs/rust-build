@@ -30,6 +30,7 @@ jobs:
             cmake \
             ninja-build \
             pkg-config \
+            perl \
             lld \
             zstd \
             xz \
@@ -38,9 +39,17 @@ jobs:
             zlib-devel \
             libzstd-devel \
             jemalloc-devel
+            
+      - name: Restore cached LLVM
+        id: cache-llvm
+        uses: actions/cache@v4
+        with:
+          path: /opt/llvm-18
+          key: llvm-18-${{ matrix.arch }}-${{ env.LLVM_VERSION }}
 
       - name: Checkout LLVM Repository
         uses: actions/checkout@v5
+        if: steps.cache-llvm.outputs.cache-hit != 'true'
         with:
           repository: llvm/llvm-project
           ref: llvmorg-${{ env.LLVM_VERSION }}
@@ -48,6 +57,7 @@ jobs:
           submodules: true
           
       - name: Build and Install LLVM
+        if: steps.cache-llvm.outputs.cache-hit != 'true'
         run: |
           mkdir llvm-build
           cd llvm-build
