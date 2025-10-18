@@ -32,7 +32,7 @@ jobs:
             wget
           env CI=true /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew install llvm@18 pkgconf cmake ninja zstd jemalloc openssl
+          brew install llvm@18 pkgconf cmake ninja jemalloc openssl
 
       - name: Checkout Rust Repository
         uses: actions/checkout@v4
