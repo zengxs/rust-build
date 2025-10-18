@@ -5,7 +5,7 @@ on: push
 env:
   NIGHTLY_COMMIT: a7a1618e6c835f1f00940ad72203d05808209a0d
   NIGHTLY_VERSION: '2025-07-22'
-  LLVM_MAJOR: 19
+  LLVM_MAJOR: 18
 
 jobs:
   build:
@@ -27,18 +27,12 @@ jobs:
           dnf groupinstall -yq "Development Tools"
           dnf install -yq \
             git \
-            cmake \
-            ninja-build \
-            pkg-config \
-            llvm-toolset \
-            llvm-devel \
-            openssl-devel \
-            zlib-devel \
-            libzstd-devel \
-            jemalloc-devel \
             zstd \
             xz \
             wget
+          env CI=true /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew install llvm@18 pkgconf cmake ninja zlib zstd jemalloc openssl
 
       - name: Checkout Rust Repository
         uses: actions/checkout@v4
@@ -49,6 +43,7 @@ jobs:
 
       - name: Build Rust
         run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           ./configure \
             --prefix=/opt/rust-nightly-${{ env.NIGHTLY_VERSION }} \
             --sysconfdir=/opt/rust-nightly-${{ env.NIGHTLY_VERSION }}/etc \
@@ -56,7 +51,7 @@ jobs:
             --enable-full-tools \
             --enable-cargo-native-static \
             --enable-llvm-link-shared \
-            --llvm-root=/usr \
+            --llvm-root=$(brew --prefix llvm@18) \
             --set=rust.jemalloc \
             --disable-lld
           make -j$(nproc)
