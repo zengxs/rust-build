@@ -127,12 +127,23 @@ jobs:
 
       - name: Make Archive
         run: |
-          tar -Pcvf rust-nightly+llvm-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar /opt/rust-nightly-${{ env.NIGHTLY_VERSION }} /opt/llvm-18
-          xz --verbose -9e -T0 rust-nightly+llvm-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar
+          # remove hyphens from version for filename compatibility
+          version="el9.${{ env.NIGHTLY_VERSION }}+${{ env.LLVM_VERSION }}.${{ matrix.arch }}"
+          version=${version//-/}
+          artifact_name="rust-nightly+llvm-${version}"
+          filename="${artifact_name}.tar"
+          
+          tar -Pcvf $filename \
+            /opt/rust-nightly-${{ env.NIGHTLY_VERSION }} \
+            /opt/llvm-18
+          xz --verbose -9e -T0 $filename
+          
+          echo "ARTIFACT_NAME=${artifact_name}" >> $GITHUB_ENV
+          echo "ARTIFACT_PATH=${artifact_name}.tar.xz" >> $GITHUB_ENV
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rust-nightly+llvm-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}
-          path: rust-nightly+llvm-${{ env.NIGHTLY_VERSION }}-${{ matrix.arch }}.tar.xz
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
           compression-level: "0"
