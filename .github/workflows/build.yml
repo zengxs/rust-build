@@ -91,6 +91,8 @@ jobs:
           ninja install
           /opt/llvm-18/bin/llvm-config --version
           cd ..
+          # release disk space
+          rm -rf llvm-project llvm-build
 
       - name: Checkout Rust Repository
         uses: actions/checkout@v5
