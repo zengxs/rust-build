@@ -119,9 +119,7 @@ jobs:
             --disable-lld
           make -j$(nproc)
           make install
-
-      - name: Verify Installation
-        run: |
+          # Verify Installation
           /opt/rust-nightly-${{ env.NIGHTLY_VERSION }}/bin/rustc --version
           /opt/rust-nightly-${{ env.NIGHTLY_VERSION }}/bin/cargo --version
 
