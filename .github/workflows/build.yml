@@ -145,9 +145,3 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_PATH }}
           compression-level: "0"
-
-      - name: Release Artifacts
-        if: github.ref_type == 'tag'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: ${{ env.ARTIFACT_PATH }}
