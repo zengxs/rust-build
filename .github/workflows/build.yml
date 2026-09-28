@@ -23,7 +23,7 @@ jobs:
       - name: Install Build Dependencies
         run: |
           zypper install -yt pattern 'devel_C_C++'
-          zypper install -yq \
+          zypper install -y \
             git-core \
             cmake \
             ninja \
