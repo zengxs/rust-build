@@ -34,7 +34,6 @@ jobs:
             xz \
             wget \
             libopenssl-devel \
-            zlib-devel \
             libzstd-devel \
             jemalloc-devel
             
